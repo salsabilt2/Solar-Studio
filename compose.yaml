@@ -1,0 +1,40 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: solar
+      POSTGRES_PASSWORD: solar-local-only
+      POSTGRES_DB: solar_studio
+    volumes:
+      - solar_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U solar -d solar_studio"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  mail:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+psycopg://solar:solar-local-only@db:5432/solar_studio
+      SECRET_KEY: ${SECRET_KEY:-local-development-change-me-at-least-32-characters}
+      PUBLIC_URL: http://localhost:8000
+      ALLOW_PUBLIC_SIGNUP: "true"
+      SMTP_HOST: mail
+      SMTP_PORT: "1025"
+      EMAIL_FROM: Solar Studio <hello@solar.local>
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      SCHEDULER_SECRET: ${SCHEDULER_SECRET:-local-scheduler-secret}
+    depends_on:
+      db:
+        condition: service_healthy
+      mail:
+        condition: service_started
+volumes:
+  solar_db:

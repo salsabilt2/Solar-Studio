@@ -1,0 +1,38 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: solar
+          POSTGRES_PASSWORD: solar-ci
+          POSTGRES_DB: solar_studio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U solar -d solar_studio"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: pip install '.[dev]'
+      - run: ruff check backend tests alembic && ruff format --check backend tests alembic && pytest -q
+      - run: alembic upgrade head
+        env:
+          DATABASE_URL: postgresql+psycopg://solar:solar-ci@localhost:5432/solar_studio
+      - run: npm ci && npm run format:check && npm run build
+        working-directory: frontend

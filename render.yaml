@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: solar-studio
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: ALLOW_PUBLIC_SIGNUP
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: INVITE_CODE
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+      - key: SCHEDULER_SECRET
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false

@@ -1,0 +1,19 @@
+name: Nightly solar jobs
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh weather and due reports
+        env:
+          SOLAR_STUDIO_URL: ${{ secrets.SOLAR_STUDIO_URL }}
+          SOLAR_SCHEDULER_SECRET: ${{ secrets.SOLAR_SCHEDULER_SECRET }}
+        run: |
+          test -n "$SOLAR_STUDIO_URL"
+          test -n "$SOLAR_SCHEDULER_SECRET"
+          curl --fail --show-error --retry 3 --retry-delay 15 \
+            -X POST -H "Authorization: Bearer $SOLAR_SCHEDULER_SECRET" \
+            "$SOLAR_STUDIO_URL/api/v1/jobs/run-due"
