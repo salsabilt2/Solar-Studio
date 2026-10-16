@@ -1,0 +1,13 @@
+.venv/
+node_modules/
+dist/
+backend/static/
+frontend/tsconfig.tsbuildinfo
+*.egg-info/
+__pycache__/
+.pytest_cache/
+.env
+*.db
+uploads/
+.DS_Store
+
