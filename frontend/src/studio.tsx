@@ -1,4 +1,11 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -54,6 +61,75 @@ function Notice({ message, clear }: { message: string; clear?: () => void }) {
       )}
     </div>
   ) : null;
+}
+
+function DeleteConfirmDialog({
+  title,
+  description,
+  busy,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  description: string;
+  busy: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+    return () => {
+      if (dialog?.open) dialog.close();
+    };
+  }, []);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="setup-confirm"
+      aria-labelledby="delete-confirm-title"
+      aria-describedby="delete-confirm-description"
+      aria-busy={busy}
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!busy) onCancel();
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget && !busy) onCancel();
+      }}
+    >
+      <div className="setup-confirm-content">
+        <span className="setup-confirm-icon" aria-hidden="true">
+          <Trash2 size={19} />
+        </span>
+        <p className="studio-overline">Please confirm</p>
+        <h2 id="delete-confirm-title">{title}</h2>
+        <p id="delete-confirm-description">{description}</p>
+        <div className="setup-confirm-actions">
+          <button
+            className="button-outline"
+            type="button"
+            autoFocus
+            disabled={busy}
+            onClick={onCancel}
+          >
+            Cancel
+          </button>
+          <button
+            className="button-danger"
+            type="button"
+            disabled={busy}
+            onClick={onConfirm}
+          >
+            {busy ? "Removing…" : "Confirm"}
+          </button>
+        </div>
+      </div>
+    </dialog>
+  );
 }
 
 function Auth({ onUser }: { onUser: (user: User) => void }) {
@@ -325,6 +401,8 @@ function Dashboard({ user }: { user: User }) {
   const [name, setName] = useState("");
   const [creating, setCreating] = useState(false);
   const [message, setMessage] = useState("");
+  const [projectToRemove, setProjectToRemove] = useState<Project | null>(null);
+  const [deletingProject, setDeletingProject] = useState(false);
   async function create() {
     try {
       const project = await api<Project>("/projects", json("POST", { name }));
@@ -334,6 +412,21 @@ function Dashboard({ user }: { user: User }) {
       navigate(`/app/projects/${project.id}`);
     } catch (error) {
       setMessage((error as Error).message);
+    }
+  }
+  async function removeProject() {
+    if (!projectToRemove) return;
+    try {
+      setDeletingProject(true);
+      await api(`/projects/${projectToRemove.id}`, { method: "DELETE" });
+      setProjectToRemove(null);
+      setMessage("Project deleted.");
+      reload();
+    } catch (error) {
+      setProjectToRemove(null);
+      setMessage((error as Error).message);
+    } finally {
+      setDeletingProject(false);
     }
   }
   const shown = (projects || []).filter(
@@ -411,25 +504,36 @@ function Dashboard({ user }: { user: User }) {
       ) : (
         <div className="project-grid">
           {shown.map((project) => (
-            <button
-              className="project-card"
-              key={project.id}
-              onClick={() => navigate(`/app/projects/${project.id}`)}
-            >
-              <span className="project-card-top">
-                <span className={`status-dot ${project.status}`} />
-                {project.status === "active" ? "In progress" : "Completed"}
-                <ArrowUpRight size={19} />
-              </span>
-              <span className="project-card-title">{project.name}</span>
-              <span className="project-card-bottom">
-                {project.setups.length} panel{" "}
-                {project.setups.length === 1 ? "setup" : "setups"}{" "}
-                <span>
-                  Explore <ArrowRight size={17} />
+            <article className="project-card" key={project.id}>
+              <button
+                type="button"
+                className="project-card-open"
+                onClick={() => navigate(`/app/projects/${project.id}`)}
+              >
+                <span className="project-card-top">
+                  <span className={`status-dot ${project.status}`} />
+                  {project.status === "active" ? "In progress" : "Completed"}
+                  <ArrowUpRight size={19} />
                 </span>
-              </span>
-            </button>
+                <span className="project-card-title">{project.name}</span>
+                <span className="project-card-bottom">
+                  {project.setups.length} panel{" "}
+                  {project.setups.length === 1 ? "setup" : "setups"}{" "}
+                  <span>
+                    Explore <ArrowRight size={17} />
+                  </span>
+                </span>
+              </button>
+              <button
+                type="button"
+                className="project-card-delete"
+                aria-label={`Delete ${project.name}`}
+                title={`Delete ${project.name}`}
+                onClick={() => setProjectToRemove(project)}
+              >
+                <Trash2 size={16} />
+              </button>
+            </article>
           ))}
         </div>
       )}
@@ -470,6 +574,15 @@ function Dashboard({ user }: { user: User }) {
             </button>
           </form>
         </div>
+      )}
+      {projectToRemove && (
+        <DeleteConfirmDialog
+          title={`Delete “${projectToRemove.name}”?`}
+          description="This project and its reports will be permanently removed. You can’t undo this."
+          busy={deletingProject}
+          onConfirm={removeProject}
+          onCancel={() => setProjectToRemove(null)}
+        />
       )}
     </>
   );
@@ -718,6 +831,7 @@ function ProjectPage({ id }: { id: number }) {
   const [dates, setDates] = useState({ start: "", end: "" });
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [setupToRemove, setSetupToRemove] = useState<Setup | null>(null);
   const [compare, setCompare] = useState("");
   const [comparison, setComparison] = useState<{
     current: Estimate;
@@ -785,6 +899,24 @@ function ProjectPage({ id }: { id: number }) {
       setBusy(false);
     }
   }
+  async function removeSetup() {
+    if (!setupToRemove) return;
+    try {
+      setBusy(true);
+      await api(`/setups/${setupToRemove.id}`, { method: "DELETE" });
+      setSelected((current) =>
+        current === setupToRemove.id ? undefined : current,
+      );
+      setSetupToRemove(null);
+      setMessage("Setup removed.");
+      reload();
+    } catch (error) {
+      setMessage((error as Error).message);
+      setSetupToRemove(null);
+    } finally {
+      setBusy(false);
+    }
+  }
   async function makeReport() {
     if (!setup) return;
     try {
@@ -838,18 +970,11 @@ function ProjectPage({ id }: { id: number }) {
         title={project.name}
         subtitle={`${project.setups.length} panel ${project.setups.length === 1 ? "setup" : "setups"} · ${project.status === "active" ? "Ready to explore" : "Read-only report saved"}`}
         action={
-          <div className="header-actions">
-            {project.status === "completed" && (
-              <button className="button-outline" onClick={copy}>
-                <Copy size={16} /> Copy project
-              </button>
-            )}
-            {project.status === "active" && (
-              <button className="button-dark" onClick={() => setEditing("new")}>
-                <CirclePlus size={18} /> Add setup
-              </button>
-            )}
-          </div>
+          project.status === "completed" ? (
+            <button className="button-outline" onClick={copy}>
+              <Copy size={16} /> Copy project
+            </button>
+          ) : null
         }
       />
       <Notice message={message} clear={() => setMessage("")} />
@@ -925,7 +1050,30 @@ function ProjectPage({ id }: { id: number }) {
           ) : setup ? (
             <>
               <div className="side-top">
-                <p className="studio-overline">Selected setup</p>
+                <div className="side-heading">
+                  <p className="studio-overline">Selected setup</p>
+                  {project.status === "active" && (
+                    <div className="side-controls">
+                      <button
+                        type="button"
+                        aria-label={`Edit ${setup.label}`}
+                        title="Edit setup"
+                        onClick={() => setEditing(setup.id)}
+                      >
+                        <Settings2 size={17} />
+                      </button>
+                      <button
+                        type="button"
+                        className="side-control-delete"
+                        aria-label={`Remove ${setup.label}`}
+                        title="Remove setup"
+                        onClick={() => setSetupToRemove(setup)}
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <h2>{setup.label}</h2>
                 <p>{setup.location_name}</p>
                 <div className="side-stats">
@@ -942,21 +1090,6 @@ function ProjectPage({ id }: { id: number }) {
                   {setup.panel.maker} · {setup.panel.model}
                 </p>
               </div>
-              {project.status === "active" && (
-                <div className="side-controls">
-                  <button onClick={() => setEditing(setup.id)}>
-                    Edit setup <Settings2 size={17} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (confirm("Remove this setup?"))
-                        act(`/setups/${setup.id}`, "DELETE");
-                    }}
-                  >
-                    Remove setup <Trash2 size={17} />
-                  </button>
-                </div>
-              )}
               <div className="date-fields">
                 <label>
                   From
@@ -1087,22 +1220,15 @@ function ProjectPage({ id }: { id: number }) {
           </div>
         </section>
       )}
-      <div className="danger-zone">
-        <button
-          onClick={() => {
-            if (
-              confirm(
-                "Delete this project and its reports? This cannot be undone.",
-              )
-            )
-              api(`/projects/${id}`, { method: "DELETE" })
-                .then(() => navigate("/app"))
-                .catch((error) => setMessage(error.message));
-          }}
-        >
-          <Trash2 size={16} /> Delete project
-        </button>
-      </div>
+      {setupToRemove && (
+        <DeleteConfirmDialog
+          title={`Remove “${setupToRemove.label}”?`}
+          description="This setup will be removed from your project. You can’t undo this."
+          busy={busy}
+          onConfirm={removeSetup}
+          onCancel={() => setSetupToRemove(null)}
+        />
+      )}
     </>
   );
 }
