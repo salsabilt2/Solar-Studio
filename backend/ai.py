@@ -127,6 +127,8 @@ def index_document(document_id: int) -> None:
         if not claim.rowcount:
             return
         document = db.get(Document, document_id)
+        if not document:
+            return
         try:
             owner = db.get(User, document.owner_id)
             if not owner or owner.deleted_at:
@@ -143,6 +145,14 @@ def index_document(document_id: int) -> None:
                 raise HTTPException(413, "This PDF contains too much text for one upload.")
             reserve_budget(db, owner, reserve=0.05)
             vectors = embed([part for _, part in chunks])
+            document = db.scalar(
+                select(Document)
+                .where(Document.id == document_id)
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            )
+            if not document:
+                return
             db.execute(delete(DocumentChunk).where(DocumentChunk.document_id == document.id))
             for (page_no, part), vector in zip(chunks, vectors, strict=True):
                 db.add(
@@ -156,6 +166,8 @@ def index_document(document_id: int) -> None:
             logger.exception("Document indexing failed for document %s", document_id)
             db.rollback()
             document = db.get(Document, document_id)
+            if not document:
+                return
             document.status = "failed"
             document.error = (
                 str(exc.detail)
@@ -203,7 +215,27 @@ async def upload_document(
 @router.get("/documents")
 def list_documents(user: User = Depends(current_user), db: Session = Depends(get_db)):
     documents = db.scalars(select(Document).where(visible_documents(user))).all()
-    return [document_out(document) for document in documents]
+    return [
+        {**document_out(document), "can_delete": document.owner_id == user.id}
+        for document in documents
+    ]
+
+
+@router.delete("/documents/{document_id}")
+def delete_document(
+    document_id: int, user: User = Depends(current_user), db: Session = Depends(get_db)
+):
+    document = db.scalar(
+        select(Document)
+        .where(Document.id == document_id, Document.owner_id == user.id)
+        .with_for_update()
+    )
+    if not document:
+        raise HTTPException(404, "Document not found.")
+    db.execute(delete(DocumentChunk).where(DocumentChunk.document_id == document.id))
+    db.delete(document)
+    db.commit()
+    return {"ok": True}
 
 
 @router.post("/documents/{document_id}/retry")

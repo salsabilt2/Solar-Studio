@@ -1,0 +1,242 @@
+{
+  "alembic/env.py": {
+    "mtime": 1792191166.764375,
+    "seen": 1792195113.123435,
+    "ast_hash": "09da592ab5e595a8ff7a1101b4b3d908",
+    "semantic_hash": "09da592ab5e595a8ff7a1101b4b3d908"
+  },
+  "alembic/versions/1cc32b859f58_initial.py": {
+    "mtime": 1792191166.76529,
+    "seen": 1792195113.1234372,
+    "ast_hash": "02c42ef737ed54f6a3ca6bfa02d224b3",
+    "semantic_hash": "02c42ef737ed54f6a3ca6bfa02d224b3"
+  },
+  "alembic/versions/457de0f69e78_roof_space.py": {
+    "mtime": 1792191997.7673419,
+    "seen": 1792195113.123439,
+    "ast_hash": "e73f93714a53ec365e97070cc14c72ca",
+    "semantic_hash": "e73f93714a53ec365e97070cc14c72ca"
+  },
+  "alembic/versions/73bc1b4c0ac8_vector_search_index.py": {
+    "mtime": 1792192203.1955667,
+    "seen": 1792195113.123439,
+    "ast_hash": "a092c144c7961c370871ecb277594a1c",
+    "semantic_hash": "a092c144c7961c370871ecb277594a1c"
+  },
+  "alembic/versions/cd9e08b0d34c_document_index_jobs.py": {
+    "mtime": 1792191790.1217577,
+    "seen": 1792195113.12344,
+    "ast_hash": "28039c02a5d5cd2e276b3bca5caa8e3e",
+    "semantic_hash": "28039c02a5d5cd2e276b3bca5caa8e3e"
+  },
+  "alembic/versions/f193f4b35dea_claim_report_jobs.py": {
+    "mtime": 1792191532.6785269,
+    "seen": 1792195113.123441,
+    "ast_hash": "652618c9326ebb98abc1aa4b153307cf",
+    "semantic_hash": "652618c9326ebb98abc1aa4b153307cf"
+  },
+  "backend/__init__.py": {
+    "mtime": 1792190461.3880715,
+    "seen": 1792195113.123441,
+    "ast_hash": "68b329da9893e34099c7d8ad5cb9c940",
+    "semantic_hash": "68b329da9893e34099c7d8ad5cb9c940"
+  },
+  "backend/ai.py": {
+    "mtime": 1792191790.1220646,
+    "seen": 1792195113.123442,
+    "ast_hash": "cf9343825db3ca59f017fbac53687f9e",
+    "semantic_hash": "cf9343825db3ca59f017fbac53687f9e"
+  },
+  "backend/auth.py": {
+    "mtime": 1792191163.400272,
+    "seen": 1792195113.123442,
+    "ast_hash": "ca492d33fc03f0160f87b72e0fa2d42f",
+    "semantic_hash": "ca492d33fc03f0160f87b72e0fa2d42f"
+  },
+  "backend/config.py": {
+    "mtime": 1792191505.3064117,
+    "seen": 1792195113.123443,
+    "ast_hash": "fb4a105f82c6de892bb8095e8ad4a1df",
+    "semantic_hash": "fb4a105f82c6de892bb8095e8ad4a1df"
+  },
+  "backend/db.py": {
+    "mtime": 1792191166.766056,
+    "seen": 1792195113.123444,
+    "ast_hash": "91028985104b932bc8082475fc43b705",
+    "semantic_hash": "91028985104b932bc8082475fc43b705"
+  },
+  "backend/main.py": {
+    "mtime": 1792192162.6603758,
+    "seen": 1792195113.123444,
+    "ast_hash": "bf6f75ddf4d59bcb1e3945956ce9963c",
+    "semantic_hash": "bf6f75ddf4d59bcb1e3945956ce9963c"
+  },
+  "backend/models.py": {
+    "mtime": 1792191968.1760006,
+    "seen": 1792195113.123445,
+    "ast_hash": "f87c1938a86fea94af6485c41db67382",
+    "semantic_hash": "f87c1938a86fea94af6485c41db67382"
+  },
+  "backend/reports.py": {
+    "mtime": 1792191976.267163,
+    "seen": 1792195113.123446,
+    "ast_hash": "5abaace3139f3cc9a44d0ff2ea165405",
+    "semantic_hash": "5abaace3139f3cc9a44d0ff2ea165405"
+  },
+  "backend/routes.py": {
+    "mtime": 1792192008.499976,
+    "seen": 1792195113.123446,
+    "ast_hash": "768a3ba97ff33403df1a69ab30245cd9",
+    "semantic_hash": "768a3ba97ff33403df1a69ab30245cd9"
+  },
+  "backend/solar.py": {
+    "mtime": 1792191355.3039546,
+    "seen": 1792195113.123447,
+    "ast_hash": "131bef6a63da50bc65a6c2a062eaeca6",
+    "semantic_hash": "131bef6a63da50bc65a6c2a062eaeca6"
+  },
+  "eval/questions.json": {
+    "mtime": 1792191492.3915808,
+    "seen": 1792195113.123447,
+    "ast_hash": "9b4ecaec8584d18b16e3a893f61209f4",
+    "semantic_hash": "9b4ecaec8584d18b16e3a893f61209f4"
+  },
+  "eval/run.py": {
+    "mtime": 1792191779.0510569,
+    "seen": 1792195113.1234481,
+    "ast_hash": "77e22badc2d08cc163c8825c2ce48a10",
+    "semantic_hash": "77e22badc2d08cc163c8825c2ce48a10"
+  },
+  "frontend/package.json": {
+    "mtime": 1792191864.9283845,
+    "seen": 1792195113.1234481,
+    "ast_hash": "782dec454adef372bcc23237a9723c99",
+    "semantic_hash": "782dec454adef372bcc23237a9723c99"
+  },
+  "frontend/src/api.ts": {
+    "mtime": 1792191968.3547368,
+    "seen": 1792195113.123449,
+    "ast_hash": "8601e1ac0815f27e5230d24d6349195b",
+    "semantic_hash": "8601e1ac0815f27e5230d24d6349195b"
+  },
+  "frontend/src/energy-chart.tsx": {
+    "mtime": 1792191908.262394,
+    "seen": 1792195113.12345,
+    "ast_hash": "c6bb927151af62e708ce2eb463f506e7",
+    "semantic_hash": "c6bb927151af62e708ce2eb463f506e7"
+  },
+  "frontend/src/landing.tsx": {
+    "mtime": 1792192284.8317695,
+    "seen": 1792195113.12345,
+    "ast_hash": "ff37b3efb50d68e4d5e1c796edde932c",
+    "semantic_hash": "ff37b3efb50d68e4d5e1c796edde932c"
+  },
+  "frontend/src/main.tsx": {
+    "mtime": 1792191859.2062993,
+    "seen": 1792195113.123451,
+    "ast_hash": "cee8aec34d94e78047ce52b5963f5faf",
+    "semantic_hash": "cee8aec34d94e78047ce52b5963f5faf"
+  },
+  "frontend/src/setup-map.tsx": {
+    "mtime": 1792191908.2582302,
+    "seen": 1792195113.123451,
+    "ast_hash": "3cf5f217d9c2e3c438b10f60d2e8cecf",
+    "semantic_hash": "3cf5f217d9c2e3c438b10f60d2e8cecf"
+  },
+  "frontend/src/studio.tsx": {
+    "mtime": 1792533830.857316,
+    "seen": 1792534136.920623,
+    "ast_hash": "03f7f6a53cb392ef5d3c937b03f83256",
+    "semantic_hash": "03f7f6a53cb392ef5d3c937b03f83256"
+  },
+  "frontend/tsconfig.json": {
+    "mtime": 1792190461.2877882,
+    "seen": 1792195113.123453,
+    "ast_hash": "f0d2bccab7fb72edbb1f9105859ad596",
+    "semantic_hash": "f0d2bccab7fb72edbb1f9105859ad596"
+  },
+  "frontend/vite.config.ts": {
+    "mtime": 1792191859.3952062,
+    "seen": 1792195113.123453,
+    "ast_hash": "5c7e367c053f8f866332153a0213168e",
+    "semantic_hash": "5c7e367c053f8f866332153a0213168e"
+  },
+  "pyproject.toml": {
+    "mtime": 1792191824.7515485,
+    "seen": 1792195113.1234539,
+    "ast_hash": "d82f9fc6f246f3db3c6ba16121cd91fb",
+    "semantic_hash": "d82f9fc6f246f3db3c6ba16121cd91fb"
+  },
+  "tests/conftest.py": {
+    "mtime": 1792191166.7649653,
+    "seen": 1792195113.1234539,
+    "ast_hash": "a7b37e06acd1f69ceef7b62c4da1d7e3",
+    "semantic_hash": "a7b37e06acd1f69ceef7b62c4da1d7e3"
+  },
+  "tests/test_flow.py": {
+    "mtime": 1792192197.3255692,
+    "seen": 1792195113.123455,
+    "ast_hash": "61d93abd613c844aa351ba8990d527b9",
+    "semantic_hash": "61d93abd613c844aa351ba8990d527b9"
+  },
+  ".github/workflows/ci.yml": {
+    "mtime": 1792191864.9604287,
+    "seen": 1792195113.123455,
+    "ast_hash": "c4bcc463dd81b6302ccb4c4693715322",
+    "semantic_hash": "c4bcc463dd81b6302ccb4c4693715322"
+  },
+  ".github/workflows/nightly.yml": {
+    "mtime": 1792191209.53214,
+    "seen": 1792195113.123456,
+    "ast_hash": "08503b8be2777a1e709530d9be5f512b",
+    "semantic_hash": "08503b8be2777a1e709530d9be5f512b"
+  },
+  "README.md": {
+    "mtime": 1792192320.2689717,
+    "seen": 1792195113.123457,
+    "ast_hash": "32c99d14bc59adc4af12f4c6c895a68c",
+    "semantic_hash": "32c99d14bc59adc4af12f4c6c895a68c"
+  },
+  "compose.yaml": {
+    "mtime": 1792191209.4291031,
+    "seen": 1792195113.123457,
+    "ast_hash": "b4c210e53b46881084bd6ac3c66f1086",
+    "semantic_hash": "b4c210e53b46881084bd6ac3c66f1086"
+  },
+  "docs/ai-evaluation.md": {
+    "mtime": 1792191492.48592,
+    "seen": 1792195113.1234581,
+    "ast_hash": "a4208b6b4dd2150dcaa01cff192a5860",
+    "semantic_hash": "a4208b6b4dd2150dcaa01cff192a5860"
+  },
+  "docs/case-study.md": {
+    "mtime": 1792192320.292067,
+    "seen": 1792195113.1234581,
+    "ast_hash": "f2036baed72848e2cf17d7fecb4cce33",
+    "semantic_hash": "f2036baed72848e2cf17d7fecb4cce33"
+  },
+  "frontend/index.html": {
+    "mtime": 1792191859.3920543,
+    "seen": 1792195113.123459,
+    "ast_hash": "808e5679f4ec2253a8eab6be3f8711b1",
+    "semantic_hash": "808e5679f4ec2253a8eab6be3f8711b1"
+  },
+  "render.yaml": {
+    "mtime": 1792191209.450452,
+    "seen": 1792195113.123459,
+    "ast_hash": "efb45e8ceaf493a0c0d82fec336f5a56",
+    "semantic_hash": "efb45e8ceaf493a0c0d82fec336f5a56"
+  },
+  "Photovoltaic_system_project.pdf": {
+    "mtime": 1685059158.0,
+    "seen": 1792195113.12346,
+    "ast_hash": "e39501725a11cbcc045da297edad08f2",
+    "semantic_hash": "e39501725a11cbcc045da297edad08f2"
+  },
+  "Roadmap AI Engineering .pdf": {
+    "mtime": 1785455382.3310425,
+    "seen": 1792195113.123461,
+    "ast_hash": "0607b9ddaeffd1ea04e9f24d135207ea",
+    "semantic_hash": "0607b9ddaeffd1ea04e9f24d135207ea"
+  }
+}

@@ -1366,6 +1366,7 @@ function Assistant() {
       id: number;
       filename: string;
       public: boolean;
+      can_delete: boolean;
       status: string;
       error: string | null;
     }[]
@@ -1377,6 +1378,11 @@ function Assistant() {
   >([]);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<{
+    id: number;
+    filename: string;
+    public: boolean;
+  } | null>(null);
   useEffect(() => {
     if (
       documents?.some(
@@ -1412,6 +1418,23 @@ function Assistant() {
       setMessage("Document saved. Indexing is in progress.");
     } catch (error) {
       setMessage((error as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function removeDocument() {
+    if (!documentToDelete) return;
+    try {
+      setBusy(true);
+      await api(`/ai/documents/${documentToDelete.id}`, { method: "DELETE" });
+      setDocumentToDelete(null);
+      setAnswer("");
+      setSources([]);
+      setMessage("Document deleted.");
+      reload();
+    } catch (error) {
+      setMessage((error as Error).message);
+      setDocumentToDelete(null);
     } finally {
       setBusy(false);
     }
@@ -1515,6 +1538,18 @@ function Assistant() {
                     Retry
                   </button>
                 )}
+                {document.can_delete && (
+                  <button
+                    type="button"
+                    className="doc-delete"
+                    aria-label={`Delete ${document.filename}`}
+                    title={`Delete ${document.filename}`}
+                    disabled={busy}
+                    onClick={() => setDocumentToDelete(document)}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
               </div>
             ))
           ) : (
@@ -1537,6 +1572,19 @@ function Assistant() {
           <small>PDFs up to 10 MB. Private by default.</small>
         </aside>
       </div>
+      {documentToDelete && (
+        <DeleteConfirmDialog
+          title={`Delete “${documentToDelete.filename}”?`}
+          description={
+            documentToDelete.public
+              ? "This published PDF and its search content will be removed for everyone. You can’t undo this."
+              : "This PDF and its search content will be permanently removed. You can’t undo this."
+          }
+          busy={busy}
+          onConfirm={removeDocument}
+          onCancel={() => setDocumentToDelete(null)}
+        />
+      )}
     </>
   );
 }

@@ -271,10 +271,11 @@ def test_private_document_search_and_download_are_owner_scoped(client, monkeypat
     client.post(
         "/api/v1/auth/login", json={"email": "alice@example.com", "password": "strong-password-123"}
     )
-    visible = {item["id"] for item in client.get("/api/v1/ai/documents").json()}
-    assert visible == {alice_document_id, public_id}
+    visible = {item["id"]: item["can_delete"] for item in client.get("/api/v1/ai/documents").json()}
+    assert visible == {alice_document_id: True, public_id: False}
     assert client.get(f"/api/v1/ai/documents/{bob_private_id}/pdf").status_code == 404
     assert client.get(f"/api/v1/ai/documents/{alice_document_id}/pdf").status_code == 200
+    assert client.delete(f"/api/v1/ai/documents/{public_id}").status_code == 404
     monkeypatch.setattr(ai, "embed", lambda _: [[1.0, 0.0]])
     completion = SimpleNamespace(
         choices=[SimpleNamespace(message=SimpleNamespace(content="From the note [1]."))]
@@ -294,6 +295,14 @@ def test_private_document_search_and_download_are_owner_scoped(client, monkeypat
         client.post("/api/v1/ai/ask", json={"question": "Is there a guarantee?"}).json()["sources"]
         == []
     )
+    assert client.delete(f"/api/v1/ai/documents/{alice_document_id}").status_code == 200
+    assert client.get("/api/v1/ai/documents").json() == []
+    assert client.get(f"/api/v1/ai/documents/{alice_document_id}/pdf").status_code == 404
+    with SessionLocal() as db:
+        assert (
+            db.query(DocumentChunk).filter(DocumentChunk.document_id == alice_document_id).count()
+            == 0
+        )
 
 
 def test_invitation_is_required_when_public_signup_is_disabled(client, monkeypatch):
@@ -387,3 +396,24 @@ def test_document_index_job_status_and_retry(client, monkeypatch):
     assert client.get("/api/v1/ai/documents").json()[0]["status"] == "ready"
     with SessionLocal() as db:
         assert db.query(DocumentChunk).filter(DocumentChunk.document_id == document_id).count() > 0
+
+
+def test_indexing_stops_if_document_is_deleted_during_embedding(client, monkeypatch):
+    user = register(client)
+    with SessionLocal() as db:
+        document = Document(owner_id=user["id"], filename="notes.pdf", pdf_bytes=fixture_pdf())
+        db.add(document)
+        db.commit()
+        document_id = document.id
+
+    def delete_during_embedding(texts):
+        with SessionLocal() as db:
+            db.delete(db.get(Document, document_id))
+            db.commit()
+        return [[1.0, 0.0] for _ in texts]
+
+    monkeypatch.setattr(ai, "embed", delete_during_embedding)
+    ai.index_document(document_id)
+    with SessionLocal() as db:
+        assert db.get(Document, document_id) is None
+        assert db.query(DocumentChunk).filter(DocumentChunk.document_id == document_id).count() == 0
